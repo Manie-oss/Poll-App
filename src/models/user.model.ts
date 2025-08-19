@@ -17,9 +17,9 @@ const UserSchema = new mongoose.Schema<IUserDoc>({
         type: String,
         required: true
     },
-    status: {
-        type: String,
-        default: "ACTIVE"
+    isEmailVerified: {
+        type: Boolean,
+        default: false
     },
 }, {
     timestamps: true,
@@ -28,9 +28,9 @@ const UserSchema = new mongoose.Schema<IUserDoc>({
       delete ret.password; // Remove password from the JSON output
       ret.id = ret._id;    // Rename _id to id
       delete ret._id;      // Remove original _id
-      delete ret.__v;
+      delete ret.__v;      // Remove Mongoose version key
       delete ret.createdAt;
-      delete ret.updatedAt;      // Remove Mongoose version key
+      delete ret.updatedAt;      
     }}
 });
 

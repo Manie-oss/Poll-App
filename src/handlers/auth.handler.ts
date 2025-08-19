@@ -3,8 +3,6 @@ import { encrypt, catchError } from "./../utils";
 import { UserModel } from "../models/user.model";
 import { IUser } from "../interfaces/models/user.types";
 
-type User = Omit<IUser, "password">;
-
 async function registerUser(req: Request, res: Response) {
   const { email, firstName, lastName, password } = req.body;
   const isUserExist = await UserModel.findOne({ email });
@@ -12,7 +10,7 @@ async function registerUser(req: Request, res: Response) {
     res.status(409).send({ message: "User already exists." });
   }
   const hashedPass = await encrypt(password);
-  const user = { email, firstName, lastName, password: hashedPass, status: "ACTIVE" };
+  const user = { email, firstName, lastName, password: hashedPass };
   const [err, data] = await catchError(UserModel.create(user));
   if (err){
     res.status(500).send({message: err.message});
