@@ -1,8 +1,12 @@
 import bcrypt from "bcrypt";
 
-export async function encrypt(text: string) : Promise<string>{
+export async function encryptText(text: string) : Promise<string>{
 const saltRounds = 10;
  return bcrypt.hash(text, saltRounds);
+}
+
+export async function compareText(text: string, hashedPass: string) : Promise<boolean>{
+  return bcrypt.compare(text, hashedPass);
 }
 
 export async function catchError<T>(
