@@ -5,7 +5,6 @@ import { UserModel } from "../models/user.model";
 import crypto from "crypto";
 import { validationResult } from "express-validator";
 
-
 async function registerUser(req: Request, res: Response) {
   const errors = validationResult(req);
 
@@ -68,8 +67,8 @@ async function verifyEmail(req: Request, res: Response){
   }
 
   user.isEmailVerified = true;
-  user.verificationToken = "";
-  // user.verificationTokenExpire = undefine;
+  user.verificationToken = undefined;
+  user.verificationTokenExpire = undefined;
 
   await user.save();
 
