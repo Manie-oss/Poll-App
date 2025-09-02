@@ -16,3 +16,4 @@ export async function catchError<T>(
     .then((data) => [undefined, data] as [undefined, T])
     .catch((error) => [error, undefined]);
 }
+

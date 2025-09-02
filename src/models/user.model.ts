@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import crypto from "crypto";
 import {IUser, IUserDoc} from "../interfaces/models/user.types";
 
 
@@ -21,6 +22,8 @@ const UserSchema = new mongoose.Schema<IUserDoc>({
         type: Boolean,
         default: false
     },
+    verificationToken: String,
+    verificationTokenExpire: Date,
 }, {
     timestamps: true,
     toJSON: {
@@ -31,7 +34,22 @@ const UserSchema = new mongoose.Schema<IUserDoc>({
       delete ret.__v;      // Remove Mongoose version key
       delete ret.createdAt;
       delete ret.updatedAt;      
+      delete ret.verificationToken;
+      delete ret.verificationTokenExpire;
     }}
 });
+
+UserSchema.methods.getVerificationToken = function () {
+  const token = crypto.randomBytes(20).toString('hex');
+
+  this.verificationToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+
+  this.verificationTokenExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
+
+  return token;
+};
 
 export const UserModel = mongoose.model<IUserDoc>('users', UserSchema);

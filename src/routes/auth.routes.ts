@@ -4,6 +4,7 @@ import { formValidator } from "../middlewares/FormValidation";
 const route = express.Router();
 
 route.post("/register", formValidator, authHandler.registerUser);
+route.get("/verifyemail/:token", authHandler.verifyEmail);
 route.post("/login", authHandler.loginUser);
 
 

@@ -5,6 +5,10 @@ export interface IUser {
     lastName?: string,
     password: string,
     isEmailVerified: boolean,
+    verificationToken: string,
+    verificationTokenExpire: Date
 }
 
-export interface IUserDoc extends Document, IUser {} 
+export interface IUserDoc extends Document, IUser {
+    getVerificationToken(): string;
+} 
