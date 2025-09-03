@@ -3,13 +3,8 @@ import { encryptText, compareText, catchError } from "./../utils";
 import sendEmail from "../utils/sendMail";
 import { UserModel } from "../models/user.model";
 import crypto from "crypto";
-import { validationResult } from "express-validator";
 
 async function registerUser(req: Request, res: Response) {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) res.status(422).json({ errors: errors.array() });
-
   const { email, firstName, lastName, password } = req.body;
     const isUserExist = await UserModel.findOne({ email });
     if (isUserExist) {
@@ -48,7 +43,6 @@ async function sendVerficationEmail(data: any, req: Request, res: Response) {
   });
 }
 
-// todo: verify email after successfully registering user
 async function verifyEmail(req: Request, res: Response){
   const {token} = req.params;
   const hashedToken = crypto
@@ -71,9 +65,7 @@ async function verifyEmail(req: Request, res: Response){
   user.verificationTokenExpire = undefined;
 
   await user.save();
-
-  res.status(200).json({ success: true, message: 'Email verified successfully' });
-  
+  res.redirect('http://localhost:3000/login');
 }
 
 async function loginUser(req: Request, res: Response) {
@@ -82,7 +74,6 @@ async function loginUser(req: Request, res: Response) {
   if (userData) {
     const isPasswordMatched = await compareText(password, userData.password);
     if (isPasswordMatched && userData.isEmailVerified) {
-      //todo: allow user to login
       res
         .status(200)
         .send({ message: "user logged in successfully", user: userData });
