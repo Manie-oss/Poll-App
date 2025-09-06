@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import route from "./routes";
+import { errorConverter, errorHandler } from "./middlewares/error";
 const app = express();
 
 dotenv.config();
@@ -18,6 +19,10 @@ app.get('/', (req: any, res: any) => {
 
 app.use("/api", route);
 
+app.use(errorConverter);
+
+app.use(errorHandler);
+
 mongoose
   .connect(MONGODB_URL || '')
   .then((con) => console.log("db is connected.", con.connection.host))
@@ -25,3 +30,4 @@ mongoose
     app.listen(PORT, () => console.log(`Server is running on the port ${PORT}`))
   )
   .catch((err) => console.log(err.message));
+

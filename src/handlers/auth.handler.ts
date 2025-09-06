@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { encryptText, compareText, catchError } from "./../utils";
+import { encryptText, compareText, catchError, ApiError } from "./../utils";
 import sendEmail from "../utils/sendMail";
 import { UserModel } from "../models/user.model";
 import crypto from "crypto";
+import httpStatus from "http-status";
 
 async function registerUser(req: Request, res: Response) {
   const { email, firstName, lastName, password } = req.body;
@@ -20,7 +21,7 @@ async function registerUser(req: Request, res: Response) {
     
     const[savedDocError, savedDoc ] = await catchError(userDoc.save());
 
-    if(savedDocError) res.status(500).send({ message: savedDocError.message });
+    if(savedDocError) throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, savedDocError.message);
 
     res
       .status(201)
@@ -56,8 +57,7 @@ async function verifyEmail(req: Request, res: Response){
   });
 
   if(!user){
-    res.status(400).json({ message: 'Invalid or expired token' });
-    return;
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid or expired token');
   }
 
   user.isEmailVerified = true;
@@ -79,18 +79,11 @@ async function loginUser(req: Request, res: Response) {
         .send({ message: "user logged in successfully", user: userData });
     }
     if (!isPasswordMatched || !userData.isEmailVerified) {
-      res
-        .status(401)
-        .send(
-          isPasswordMatched
-            ? { message: "please verify your email to login" }
-            : { message: "Incorrect Password." }
-        );
+      const errorMessage = isPasswordMatched ? "please verify your email to login" : "Incorrect Password." ;
+      throw new ApiError(httpStatus.UNAUTHORIZED, errorMessage);
     }
   }
-  res
-    .status(401)
-    .send({ message: "Account not registered yet. Register to Login" });
+  throw new ApiError(httpStatus.UNAUTHORIZED, "Account not registered yet. Register to Login"); 
 }
 
 export default { registerUser, verifyEmail, loginUser };
