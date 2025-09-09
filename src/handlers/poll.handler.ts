@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { UserModel } from "../models/user.model";
 import { PollModel } from "../models/poll.model";
+import { ApiError, catchError } from "../utils";
+import httpStatus from "http-status";
 
 async function createPoll(req: Request, res: Response) {
     const {title, options, visibility, closesAt} = req.body;
@@ -13,9 +14,24 @@ async function createPoll(req: Request, res: Response) {
         createdBy: userId,
         closesAt
     }
-    await PollModel.create({data});
+    const [error, pollDoc] = await catchError(PollModel.create(data));
+    if(error){
+        throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'error creating poll')
+    }
     
-  res.status(200).send('poll created');
+  res.status(200).send({message: 'poll created', poll: pollDoc});
 }
 
-export default { createPoll };
+//fetches all public and active polls
+async function getPolls(req: Request, res: Response){
+   const [error, allPolls] = await catchError(PollModel.find({status: 'active', visibility: 'public'}).lean());
+   if(error) throw new ApiError(httpStatus.UNAUTHORIZED, "error fetching polls");
+   res.status(200).send({message: "success", polls: allPolls});
+}
+
+//Todo: fetch poll for user account
+// async function getUserPolls(req: Request, res: Response){
+
+// }
+
+export default { createPoll, getPolls };

@@ -7,5 +7,7 @@ import {auth} from './../middlewares/auth';
 const route = express.Router();
 
 route.post("/", auth, validate(createPoll), pollHandler.createPoll);
+route.get("/", auth, pollHandler.getPolls);
+// TODO: get /my-polls of particular user
 
 export default route;

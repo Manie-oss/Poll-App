@@ -15,7 +15,7 @@ const PollSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    imageUrl: String,
+    // imageUrl: String,
     options: {
     type: [optionSchema],
     validate: {

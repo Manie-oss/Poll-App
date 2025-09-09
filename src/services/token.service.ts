@@ -20,7 +20,6 @@ export function generateToken(
   tokenType: tokenTypes
 ): string {
   const payload: jwtPayload = { userId, exp: Math.floor(new Date(expires).getTime() / 1000), iat: Math.floor(new Date().getTime()/1000), tokenType };
-  console.log('payload: ', payload);
   return jwt.sign(payload, secretKey);
 }
 
@@ -40,8 +39,6 @@ export async function generateAuthToken(user: IUserDoc) {
     accessTokenExpiresAt,
     tokenTypes.ACCESS
   );
-  console.log('accesstoken: ', accessToken)
-  console.log('accesstoken: ', accessTokenExpiresAt);
   const refreshTokenExpiresAt = addMinutesToDate(now, 90);
   const refreshToken = generateToken(
     user._id,
