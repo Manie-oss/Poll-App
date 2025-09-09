@@ -9,6 +9,6 @@ export interface IUser {
     verificationTokenExpire?: Date
 }
 
-export interface IUserDoc extends Document, IUser {
+export interface IUserDoc extends Document<string>, IUser {
     getVerificationToken(): string;
 } 

@@ -4,11 +4,14 @@ import cors from "cors";
 import mongoose from "mongoose";
 import route from "./routes";
 import { errorConverter, errorHandler } from "./middlewares/error";
+import morgan from "./utils/morgan";
 const app = express();
 
 dotenv.config();
 app.use(express.json());
 app.use(cors());
+app.use(morgan.successHandler);
+app.use(morgan.errorHandler);
 
 const PORT = parseInt(process.env.PORT || '3000');
 const MONGODB_URL = process.env.MONGO_DB_CONNECTION_URL;

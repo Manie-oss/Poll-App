@@ -8,5 +8,4 @@ route.post("/register", validate(register), authHandler.registerUser);
 route.get("/verifyemail/:token", authHandler.verifyEmail);
 route.post("/login", validate(login), authHandler.loginUser);
 
-
 export default route;

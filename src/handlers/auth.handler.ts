@@ -4,6 +4,8 @@ import sendEmail from "../utils/sendMail";
 import { UserModel } from "../models/user.model";
 import crypto from "crypto";
 import httpStatus from "http-status";
+import { generateAuthToken } from "../services/token.service";
+import { IUserDoc } from "../interfaces/models/user.types";
 
 async function registerUser(req: Request, res: Response) {
   const { email, firstName, lastName, password } = req.body;
@@ -70,13 +72,12 @@ async function verifyEmail(req: Request, res: Response){
 
 async function loginUser(req: Request, res: Response) {
   const { email, password } = req.body;
-  const userData = await UserModel.findOne({ email });
+  const userData: IUserDoc | null = await UserModel.findOne({ email });
   if (userData) {
     const isPasswordMatched = await compareText(password, userData.password);
     if (isPasswordMatched && userData.isEmailVerified) {
-      res
-        .status(200)
-        .send({ message: "user logged in successfully", user: userData });
+      const token = await generateAuthToken(userData);
+      return res.status(200).send({ message: "user logged in successfully", data: {user: userData, token} });
     }
     if (!isPasswordMatched || !userData.isEmailVerified) {
       const errorMessage = isPasswordMatched ? "please verify your email to login" : "Incorrect Password." ;
