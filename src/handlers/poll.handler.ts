@@ -30,8 +30,12 @@ async function getPolls(req: Request, res: Response){
 }
 
 //Todo: fetch poll for user account
-// async function getUserPolls(req: Request, res: Response){
+async function getUserPolls(req: Request, res: Response){
+    //@ts-ignore
+    const userId = req.user._id;
+    const [error, userPolls] = await catchError(PollModel.find({createdBy: userId, status: 'active'}).lean());
+    if(error) throw new ApiError(httpStatus.UNAUTHORIZED, "error fetching user polls");
+    res.status(200).send({message: "success", polls: userPolls});
+}
 
-// }
-
-export default { createPoll, getPolls };
+export default { createPoll, getPolls, getUserPolls };

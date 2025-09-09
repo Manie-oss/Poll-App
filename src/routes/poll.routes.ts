@@ -8,6 +8,6 @@ const route = express.Router();
 
 route.post("/", auth, validate(createPoll), pollHandler.createPoll);
 route.get("/", auth, pollHandler.getPolls);
-// TODO: get /my-polls of particular user
+route.get("/my-polls", auth, pollHandler.getUserPolls);
 
 export default route;
