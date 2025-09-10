@@ -7,3 +7,11 @@ export const createPoll = [
   body('closesAt', "expiry date required").notEmpty(),
   body('visibility', 'poll visibility required').notEmpty(),
 ]
+
+export const updatePoll = [
+  body('title', 'title required').optional().trim().notEmpty(),
+  body('options', 'options should be minimum 2 and maximum 10.').optional().isArray({ min: 2, max: 10 }),
+  check("options.*.title", "title should not be empty").optional().trim().notEmpty(),
+  body('closesAt', "expiry date required").optional().notEmpty(),
+  body('visibility', 'poll visibility required').optional().notEmpty(),
+]

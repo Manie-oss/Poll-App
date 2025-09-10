@@ -46,4 +46,25 @@ async function getPollById(req: Request, res: Response){
     res.status(200).send({message: "success", poll: poll});
 }
 
-export default { createPoll, getPolls, getPollsByUserId, getPollById };
+async function updatePoll(req: Request, res: Response){
+    const pollId = req.params.pollId;
+    //@ts-ignore
+    const updatePollData = req.body;
+    const [error, updatedPoll] = await catchError(PollModel.findByIdAndUpdate({_id: pollId}, {$set: updatePollData}, { new: true}).lean());
+    if(error) throw new ApiError(httpStatus.UNAUTHORIZED, "error updating user poll");
+    if(!updatedPoll) throw new ApiError(httpStatus.NOT_FOUND, "poll not found");
+    res.status(200).send({message: "success", poll: updatedPoll});
+}
+
+
+async function deletePoll(req: Request, res: Response){
+    const pollId = req.params.pollId;
+    //@ts-ignore
+
+    const [error, deletedPoll] = await catchError(PollModel.findByIdAndDelete({_id: pollId}));
+    if(error) throw new ApiError(httpStatus.UNAUTHORIZED, "error deleting user poll");
+    if(!deletedPoll) throw new ApiError(httpStatus.NOT_FOUND, "poll not found");
+    res.status(200).send({message: "poll deleted successfully", poll: deletedPoll});
+}
+
+export default { createPoll, getPolls, getPollsByUserId, getPollById, updatePoll, deletePoll };
