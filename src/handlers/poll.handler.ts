@@ -3,6 +3,7 @@ import { PollModel } from "../models/poll.model";
 import { ApiError, catchError } from "../utils";
 import httpStatus from "http-status";
 
+//creates a poll
 async function createPoll(req: Request, res: Response) {
     const {title, options, visibility, closesAt} = req.body;
     //@ts-ignore
@@ -28,8 +29,7 @@ async function getPolls(req: Request, res: Response){
    if(error) throw new ApiError(httpStatus.UNAUTHORIZED, "error fetching polls");
    res.status(200).send({message: "success", polls: allPolls});
 }
-
-//Todo: fetch poll for user account
+//fetches all the user polls
 async function getPollsByUserId(req: Request, res: Response){
     //@ts-ignore
     const userId = req.user._id;
@@ -38,6 +38,7 @@ async function getPollsByUserId(req: Request, res: Response){
     res.status(200).send({message: "success", polls: userPolls});
 }
 
+//fetches a poll by pollId
 async function getPollById(req: Request, res: Response){
     const pollId = req.params.pollId;
     const [error, poll] = await catchError(PollModel.findById({_id: pollId}).lean());
@@ -46,9 +47,9 @@ async function getPollById(req: Request, res: Response){
     res.status(200).send({message: "success", poll: poll});
 }
 
+//updates a poll
 async function updatePoll(req: Request, res: Response){
     const pollId = req.params.pollId;
-    //@ts-ignore
     const updatePollData = req.body;
     const [error, updatedPoll] = await catchError(PollModel.findByIdAndUpdate({_id: pollId}, {$set: updatePollData}, { new: true}).lean());
     if(error) throw new ApiError(httpStatus.UNAUTHORIZED, "error updating user poll");
@@ -56,11 +57,9 @@ async function updatePoll(req: Request, res: Response){
     res.status(200).send({message: "success", poll: updatedPoll});
 }
 
-
+//delete a poll
 async function deletePoll(req: Request, res: Response){
     const pollId = req.params.pollId;
-    //@ts-ignore
-
     const [error, deletedPoll] = await catchError(PollModel.findByIdAndDelete({_id: pollId}));
     if(error) throw new ApiError(httpStatus.UNAUTHORIZED, "error deleting user poll");
     if(!deletedPoll) throw new ApiError(httpStatus.NOT_FOUND, "poll not found");

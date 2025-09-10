@@ -2,10 +2,8 @@ import { Request, Response } from "express";
 import { UserModel } from "../models/user.model";
 import { ApiError, catchError } from "../utils";
 import httpStatus from "http-status";
-import { userInfo } from "os";
 
 async function updateUser(req: Request, res: Response){
-    //@ts-ignore
     const userId = req.params;
     const updateUserData = req.body;
     const [error, user] = await catchError(UserModel.findByIdAndUpdate({_id: userId}, {$set: updateUserData}, {new: true}).lean());
@@ -14,7 +12,6 @@ async function updateUser(req: Request, res: Response){
 }
 
 async function deleteUser(req: Request, res: Response){
-    //@ts-ignore
     const userId = req.params;
     const [error, user] = await catchError(UserModel.findByIdAndDelete({_id: userId}));
     if(error) throw new ApiError(httpStatus.UNAUTHORIZED, "error deleting user");
